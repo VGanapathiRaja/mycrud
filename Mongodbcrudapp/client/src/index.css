@@ -1,0 +1,16 @@
+*{
+  padding: 0%;
+  margin: 0%;
+  box-sizing: border-box;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.LISTS{
+  BACKGROUND: aliceblue;
+    PADDING: 20PX;
+    LIST-STYLE-TYPE: NONE;
+    BORDER: 2PX SOLID GREEN;
+    WIDTH: 300PX;
+    margin: 10PX 0;
+    text-align: center;
+}
