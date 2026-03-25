@@ -168,39 +168,36 @@ const Crudform = () => {
 
                 <div className="formdata" style={myContainer}>
                         <h2>User data from BAckend or database</h2>
-                        <table>
-                            <tr>
-                                <th>U.No</th>
-                                <th>U.NAme</th>
-                                <th>U.Mobile</th>
-                                <th colSpan={2}>Action</th>
-                            </tr>
-                            
-                                {
-                                    getData.map((u)=>{
-                                        return(
-                                            <tr key={u._id}>
-                                            <td>{u.uname}</td>
-                                            <td>{u.uemail}</td>
-                                            <td>{u.umobile}</td>
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>U.No</th>
+                                    <th>U.Name</th>
+                                    <th>U.Email</th>
+                                    <th>U.Mobile</th>
+                                    <th colSpan={2}>Action</th>
+                                </tr>
+                            </thead>
 
-                                            <td><button onClick={()=>handleEditudata(udata._id)}>edit</button></td>
-                                            <button onClick={() => handleDelete(u._id)}> Delete</button>
-                                        </tr>
-                                        )
-                                    })
-                                }
+                            <tbody>
+                                {getData.map((u, index) => (
+                                    <tr key={u._id}>
+                                        <td>{index + 1}</td>
+                                        <td>{u.uname}</td>
+                                        <td>{u.uemail}</td>
+                                        <td>{u.umobile}</td>
+
+                                        <td>
+                                            <button onClick={() => handleEditudata(u)}>Edit</button>
+                                        </td>
+
+                                        <td>
+                                            <button onClick={() => handleDelete(u._id)}>Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
                         </table>
-
-                        {/* <div>
-                        <h2>get Data </h2> 
-                        {
-                            getData.map((u)=>(
-                                    <p key={u._id}> {u.uname} </p>
-                                )
-                            )
-                        }   
-                    </div>  */}
                 </div>
         </div>
     );

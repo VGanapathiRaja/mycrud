@@ -79,7 +79,7 @@ app.post("/adduser",async(req,res)=>{
 
 
 //delete data
-    app.delete("/deleteuserdata/:_id", async(req,res)=>{
+    app.delete("/deleteuser/:_id", async(req,res)=>{
         try{
             const deleteData = await mydb.findByIdAndDelete(req.params._id);
             res.json(deleteData);
