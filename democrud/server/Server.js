@@ -71,7 +71,7 @@ app.post("/adduser",async(req,res)=>{
             console.log(updateData);
         }
         catch(err){
-            if(err) throw err;;
+            if(err) throw err;
             console.log("Data Not Updated",err);
             return res.status(500).json({message:"Data Not Updated",error:err});
         };

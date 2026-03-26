@@ -63,20 +63,58 @@ app.get("/glogindata",async(req,res)=>{
     }
 });
 
+// Update data
+
+app.put("/updatedata/:_id", async(req,res)=>{
+    try{
+        const editid = req.params._id;
+        console.log("Edit ID:", editid);
+        const updatateData = await mydb.findByIdAndUpdate(req.params._id,req.body,{new:true});
+        res.json(updatateData);
+        console.log("data updated",updatateData);
+    }
+    catch(err){
+        if(err){
+            console.log("Data Not Updated",err);
+            return res.status(500).json({Error:"Data Not Updated",Error:err});
+        }
+    }
+});
 
 
+//Delete data
+app.delete("/deletedata/:_id",async(req,res)=>{
+    try{
+        const deleteData = await mydb.findByIdAndDelete(req.params._id);
+        res.json(deleteData);
+        console.log("Data Deleted",deleteData);
+    }
+    catch(err){
+        if(err){
+            console.log("Data Not Deleted",err);
+            return res.status(500).json({Error:"Data Not Deleted",Error:err});
+        }
+    }
+});
+
+//Patch update data
+
+    // app.patch("/patchupdatedata/:_id",async(req,res)=>{
+    //     try{
+    //         const updateanyoneDatafield = await mydb.findOneAndUpdate(req.params._id,{$set:req.body},{new:true});
+    //         res.json(updateanyoneDatafield);
+    //         console.log("Data Updated",updateanyoneDatafield);
+    //     }
+    //     catch(err){
+    //         if(err){
+    //             console.log("Data Not Updated",err);
+    //             return res.status(500).json({Error:"Data Not Updated",Error:err});
+    //         }
+    //     };
+    // });
 
 
-
-
-
-
-
-
-
-
-
-app.listen(Port,(err)=>{
+app.listen(Port,(err)=>{ 
    if(err){
     console.error("Server Not Connected",err);
    }

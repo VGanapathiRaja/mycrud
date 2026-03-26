@@ -15,7 +15,16 @@ export default function Samplecrudmongo() {
         padding: "20px",
         margin: "10px",
         backgroundColor: "#e0dede",
-        borderRadius: "5px"
+        borderRadius: "5px",
+    }
+    const mesBox ={
+        position: "fixed",
+        top: "0",
+        right:"0",
+        backgroundColor: "#f1f2f3",
+        padding: "15px 30px",
+        margin:"10px",
+        width:"300px"
     }
 
     const myform={
@@ -78,6 +87,9 @@ export default function Samplecrudmongo() {
     const [loginData, setLogindata] = useState({lname:"",lemail:"",lmobile:""});
     const [err,setErr] =useState("");
 
+    const [edit,setEdit] = useState(null);
+    // const [editmobile,setEditemobile] = useState(false);
+
     const handleChange =(ldata)=>{
         setLogindata({
                 ...loginData,
@@ -85,6 +97,7 @@ export default function Samplecrudmongo() {
             })
     };
 
+    // Creating and Updating Data to DB
     async function handleSubmit(ldata){
         ldata.preventDefault();
 
@@ -93,22 +106,45 @@ export default function Samplecrudmongo() {
             return;
         }
         try{
-            await axios.post("http://localhost:4000/adduser",loginData);
-            alert("Data saved in Db...");
-            console.log(loginData);
+            // if(edit && editmobile){
+            //     await axios.patch(`http://localhost:4000/patchupdatedata/${edit}`,{ lmobile: loginData.lmobile });
+            //     alert("mobile number updated")
+            // }
+            // else 
+
+            if(edit){
+                 await axios.put(`http://localhost:4000/updatedata/${edit}`,loginData);
+                // alert("Data  Updated and saved in Db...");
+                showMessage("Data  Updated and saved in Db...","success");
+                
+            }
+            else{
+                await axios.post("http://localhost:4000/adduser",loginData);
+                // alert("Data saved in Db...");
+                showMessage("Data saved in Db","success");
+                console.log(loginData);
+            }
             setLogindata({lname:"",lemail:"",lmobile:""});
-            setErr("")
+            setEdit(null);
+            setErr("");
+            
+            //fetching after update
+            getLogindata();
         }
         catch(err){
             if(err){
             console.error(err);
-            alert("Data not sended in db")}
+            // alert("Data not sended in db");
+             showMessage("Data not sended in db","error");
+        }
+
         }
 
     }
 
-    const [glogindata,setGlogindata] = useState([]);
 
+    //Reading or Getting Data from DB
+    const [glogindata,setGlogindata] = useState([]);
     const getLogindata =async()=>{
         try{
             const gdata = await axios.get("http://localhost:4000/glogindata")
@@ -118,24 +154,101 @@ export default function Samplecrudmongo() {
         catch(err){
             if(err){
                 console.error(err);
-                console.log("Data not Foud in db")
+                // console.log("Data not Foud in db");
+                 showMessage("Data not Foud in db","error");
             }
         }
     };
 
     useEffect(()=>{
-       setTimeout(()=>{
              getLogindata();
-       },4000)
     },[])
 
+    //Update or Edit the data To DB
+
+    const handleEditdata =(udata)=>{
+        setLogindata({
+            lname: udata.lname,
+            lemail: udata.lemail,
+            lmobile: udata.lmobile
+                    
+        });
+        setEdit(udata._id);
+        console.log(udata._id);
+    };
+
+    // const handleEditMobile =async(pid)=>{
+    //     if(!(window.confirm("Are your edit your mobile number...!"))) return;
+    //    setLogindata({
+    //         lname:"",
+    //         lemail: "",
+    //         lmobile: pid.lmobile
+                    
+    //     });
+    //     setEdit(pid._id);
+    //     setEditemobile(true);
+    // }
+
+    //Delete Data 
+    const handleDelete = async(did) =>{
+       if(!window.confirm("Are your sure Delete this User...!")) return;
+
+        try{
+            await axios.delete(`http://localhost:4000/deletedata/${did}`,loginData)
+            setLogindata(glogindata.filter((ddata)=>ddata._id !== did))
+            // alert("Data Deleted from Db");
+            showMessage("Data Deleted from Db","success");
+
+            //reloading page
+            getLogindata();
+        }
+        catch(err){
+            if(err){
+                console.log("Data not deleted in DB",err);
+                // alert("Data Not Deleted in Db");
+                showMessage("Data Not Deleted in Db","error");
+            }
+        }
+    }
+
+const [message, setMessage] = useState({
+    text: "",
+    type: "" // "success" | "error"
+});
 
 
+const getMessageStyle = () => ({
+    ...mesBox,
+    backgroundColor:
+        message.type === "success" ? "#d4edda" : "#f8d7da",
+    color:
+        message.type === "success" ? "#155724" : "#721c24",
+    borderLeft: `5px solid ${
+        message.type === "success" ? "green" : "red"
+    }`
+});
+
+const showMessage = (text, type) => {
+    setMessage({ text, type });
+
+    // auto hide after 3 sec
+    setTimeout(() => {
+        setMessage({ text: "", type: "" });
+    }, 3000);
+};
 
 
   return (
     <section style={mySec}>
+
+        
+
         <div className="mongocrud" style={mysecmongocrud}>
+               {message.text && (
+                    <div style={getMessageStyle()}>
+                        {message.text}
+                    </div>
+                )}
             <h2>Mongo Db Crud App</h2>
             <form style={myform} onSubmit={handleSubmit}>
                 <div style={myinputs}>
@@ -154,7 +267,12 @@ export default function Samplecrudmongo() {
                     {err && <p style={myinputerror}> {err}</p>}
                 </div>
                 <div style={myinputs}>
-                    <button type='submit' style={mybtn}>Add Login User</button>
+                    <button type='submit' style={mybtn}> {edit ?  "Update User Data" :  "Add Login User" } </button>
+                    {/* <button type='submit' style={mybtn}> {edit 
+                                                            ? editmobile
+                                                               ? "update mobile number"
+                                                               :  "Update User Data"
+                                                            :  "Add Login User" } </button> */}
                 </div>
             </form>
 
@@ -178,8 +296,9 @@ export default function Samplecrudmongo() {
                                         <td> {gdata.lname} </td>
                                         <td> {gdata.lemail} </td>
                                         <td> {gdata.lmobile} </td>
-                                        <td ><button style={myeditbtn }>  Edit User  </button></td>
-                                        <td > <button style={mydeletebtn}> Delete User</button> </td>
+                                        <td ><button style={myeditbtn } onClick={()=>handleEditdata(gdata)}>  Edit User  </button></td>
+                                        <td > <button style={mydeletebtn} onClick={()=>handleDelete(gdata._id)}> Delete User</button> </td>
+                                        {/* <td > <button style={mydeletebtn} onClick={()=>handleEditMobile(gdata)}> Update mobile number </button> </td> */}
                                     </tr>
                                  )})
                                ) : (
